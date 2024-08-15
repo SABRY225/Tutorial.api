@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const isAuth = require('../middleware/isAuth');
-const { getTrack, getTracks, editTrack, deleteTrack, addTrack } = require('../controllers/trackController');
+const { getTrack, getTracks, editTrack, deleteTrack, addTrack, getFollowTracks } = require('../controllers/trackController');
 
 /**
  * @swagger
@@ -27,6 +27,29 @@ router.get('/single-track/:trackId', isAuth, getTrack);
 
 /**
  * @swagger
+ * /api/track/followTracks/{followTrackId}:
+ *   get:
+ *     summary: Get the authenticated user's track details
+ *     tags: [Track]
+ *     parameters:
+ *       - in: path
+ *         name: followTrackId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: FollowTracks details
+ *       404:
+ *         description: FollowTracks not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/followTracks/:followTrackId', isAuth, getFollowTracks);
+
+
+/**
+ * @swagger
  * /api/track/add-track:
  *   post:
  *     summary: Add a new track
@@ -41,6 +64,8 @@ router.get('/single-track/:trackId', isAuth, getTrack);
  *               title:
  *                 type: string
  *               description:
+ *                 type: string
+ *               followTrackId:
  *                 type: string
  *     responses:
  *       200:
@@ -73,6 +98,8 @@ router.post('/add-track', isAuth, addTrack);
  *               title:
  *                 type: string
  *               description:
+ *                 type: string
+ *               followTrackId:
  *                 type: string
  *     responses:
  *       200:

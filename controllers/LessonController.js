@@ -1,14 +1,21 @@
 const Lesson = require('../models/lessonModel'); 
 const Course = require('../models/courseModel'); 
+const LessonDetiales = require('../models/lessonDetialeModel'); 
 
 // Get a single lesson
 const getLesson = async (req, res) => {
     try {
+        const lessonId=req.params.lessonId
         const lesson = await Lesson.findById(req.params.lessonId);
-        if (!lesson) {
+        const lessonDetiales = await LessonDetiales.find({lessonId});
+        if (!lesson && !lessonDetiales) {
             return res.status(404).json({ message: 'Lesson not found' });
         }
-        res.status(200).json(lesson);
+        const newLesson= {
+            titleLesson:lesson.titleLesson,
+            lessonContent:lessonDetiales[0].lessonContent
+        }
+        res.status(200).json(newLesson);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
@@ -27,8 +34,11 @@ const getLessons = async (req, res) => {
 // Edit an existing lesson
 const editLesson = async (req, res) => {
     try {
-        const lesson = await Lesson.findByIdAndUpdate(req.params.lessonId, req.body, { new: true });
-        if (!lesson) {
+        const { titleLesson ,lessonContent} = req.body;
+        const lessonId=req.params.lessonId
+        const lesson = await Lesson.findByIdAndUpdate(lessonId, {titleLesson}, { new: true });
+        const lessonDetiales = await LessonDetiales.findOneAndUpdate(lessonId, {lessonContent}, { new: true });
+        if (!lesson && !lessonDetiales) {
             return res.status(404).json({ message: 'Lesson not found' });
         }
         res.status(200).json(lesson);
@@ -40,7 +50,12 @@ const editLesson = async (req, res) => {
 // Delete a lesson
 const deleteLesson = async (req, res) => {
     try {
+        console.log(req.params.lessonId);
+        const lessonId=req.params.lessonId
         const lesson = await Lesson.findByIdAndDelete(req.params.lessonId);
+        console.log(lesson);
+        const lessonDetiales = await LessonDetiales.findOneAndDelete({lessonId});
+        console.log(lessonDetiales);
         if (!lesson) {
             return res.status(404).json({ message: 'Lesson not found' });
         }
@@ -58,9 +73,15 @@ const addLesson = async (req, res) => {
         if (!course) {
             return res.status(404).json({ message: 'Course not found' });
         }
-        const { title, content } = req.body;
-        const newLesson = new Lesson({ title, content,courseId});
+        const { titleLesson, lessonContent } = req.body;
+        // console.log('lessonContent',lessonContent);
+        const newLesson = new Lesson({ titleLesson,courseId});
+        // console.log('newLesson',newLesson);
+        const lessonId=newLesson._id
         const savedLesson = await newLesson.save();
+        const newLessonDetailes = new LessonDetiales({ lessonId,lessonContent});
+        const savednewLessonDetailes = await newLessonDetailes.save();
+        // console.log(savednewLessonDetailes);
         res.status(201).json(savedLesson);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });

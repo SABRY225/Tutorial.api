@@ -50,10 +50,17 @@ router.get('/single-lesson/:lessonId', isAuth, getLesson);
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               titleLesson:
  *                 type: string
- *               content:
- *                 type: string
+ *               lessonContent:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     title:
+ *                       type: string
+ *                     content:
+ *                       type: string
  *     responses:
  *       200:
  *         description: Lesson added successfully
@@ -81,10 +88,17 @@ router.post('/:courseId/add-lesson', isAuth, addLesson);
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               titleLesson:
  *                 type: string
- *               content:
- *                 type: string
+ *               lessonContent:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     title:
+ *                       type: string
+ *                     content:
+ *                       type: string
  *     responses:
  *       200:
  *         description: Lesson updated successfully
